@@ -5,9 +5,13 @@ from src.status import Status
 class Database(object):
     """Represents a database storing a dynamic class structure.
 
-    We use a tree structure along with a hash table to store precomputed statuses.
+    We use a tree structure to store nodes with their current status.
+    A status is a property of the node, and is not associated to an image, 
+    since all images associated to a given class share the same status.
     The high-level strategy is to make the main computations during the write phase, 
-    and provide a light read. Please see the README file for more details.
+    and provide a light read, at the expense of storing statuses.
+
+    Please see the README file for more details.
     """
 
     def __init__(self, root_name):
@@ -16,10 +20,8 @@ class Database(object):
         Args:
             root_name (str): The root class name.
         """
-        self.root = Node(None)
-        self.name_to_node = {root_name: self.root}
+        self.name_to_node = {root_name: Node(None)}
         self.extract = None
-        self.status = dict()
 
     def add_nodes(self, elements):
         """Add nodes to the structure.
@@ -33,9 +35,9 @@ class Database(object):
             # Add node to structure
             parent = self._add_node(child_name, parent_name)
 
-            # Precompute node status if required
+            # Update node status if required
             if self._should_compute_status():
-                self._update_status(parent)
+                parent.update_status_new_child()
 
     def add_extract(self, extract):
         """Add extract to the database.
@@ -70,19 +72,6 @@ class Database(object):
 
         return parent
 
-    def _update_status(self, parent):
-        """Compute and update the status using the parent node.
-        """
-        # Store GRANULARITY_STAGED only if current status is empty
-        # If it's not and it's already GRANULARITY_STAGED, we are good
-        # If it's not and it's COVERAGE_STAGED, it should keep priority
-        if parent not in self.status:
-            self.status[parent] = Status.GRANULARITY_STAGED
-
-        # Override status of all children
-        for neighbor in parent.children:
-            self.status[neighbor] = Status.COVERAGE_STAGED
-
     def _get_status(self, node_names):
         """Compute the status of each node, and aggregate to the final one.
         """
@@ -96,13 +85,7 @@ class Database(object):
         if not node_name in self.name_to_node:
             return Status.INVALID
 
-        node = self.name_to_node[node_name]
-
-        # No status has been precomputed, everything is valid
-        if not node in self.status:
-            return Status.VALID
-
-        return self.status[node]
+        return self.name_to_node[node_name].status
 
     def _should_compute_status(self):
         """Returns True if an extract has already been added.

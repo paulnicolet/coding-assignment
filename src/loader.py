@@ -46,9 +46,18 @@ class ScenarioLoader(object):
         """Returns the graph build tail, i.e. everything except the root.
 
         Returns:
-            List[Tuple[str, str]]: The graph build tail.
+            List[Tuple[str, str]]: The graph build tail as a list of (child name, parent name).
         """
         return self._graph_build[1:]
+
+    @property
+    def graph_edits(self):
+        """Returns the graph edits.
+
+        Returns:
+            List[Tuple[str, str]]: The graph edits as a list of (child name, parent name).
+        """
+        return self._graph_edits
 
     @property
     def expected_status(self):

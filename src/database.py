@@ -1,17 +1,13 @@
 class Database(object):
 
-    def __init__(self):
+    def __init__(self, root_name):
+        pass
 
-        raise NotImplementedError
+    def add_nodes(self, elements):
+        pass
 
-    def add_nodes(self):
-
-        raise NotImplementedError
-
-    def add_extract(self):
-
-        raise NotImplementedError
+    def add_extract(self, extract):
+        pass
 
     def get_extract_status(self):
-
-        raise NotImplementedError
+        return dict()

@@ -2,6 +2,7 @@ from pathlib import Path
 
 from src.loader import ScenarioLoader
 from src.database import Database
+from src.eval import accuracy
 
 SCENARIOS_PATH = Path('.') / 'data' / 'scenarios'
 
@@ -16,7 +17,8 @@ def run(scenario_id):
 
     status = db.get_extract_status()
 
-    print(status)
+    acc = accuracy(loader.expected_status, status)
+    print(acc)
 
 
 if __name__ == "__main__":

@@ -66,6 +66,14 @@ During an edit, the algorithm principle is the following:
 Then, when querying the extract status, we only have to fetch the status of each class for each image, and aggregate the given statuses to output the final one.
 
 
+#### Improvements
+
+Of course, there are plenty of possible improvements, amongst:
+
+* Adding unit tests to test each component individually
+* Adding persistence, to get even closer to a real database system
+* ...
+
 
 ## Context
 

@@ -7,6 +7,8 @@ EXTRACT_FNAME = 'img_extract.json'
 
 
 class ScenarioLoader(object):
+    """Responsible to load and provide data associated with a given scenario.
+    """
 
     def __init__(self, base_path, scenario_id):
         """Load scenario files and init scenario.

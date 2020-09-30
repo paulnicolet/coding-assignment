@@ -13,10 +13,12 @@ class Node(object):
 
     @property
     def is_valid(self):
+        """True if status is VALID.
+        """
         return self.status == Status.VALID
 
     def update_status_new_child(self):
-        """Compute and update the status using the parent node.
+        """Compute and update the status using the parent node when a new child is added.
         """
         # If not valid, GRANULARITY_STAGED does not take priority
         if self.is_valid:

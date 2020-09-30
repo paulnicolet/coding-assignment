@@ -105,6 +105,8 @@ class ScenarioLoader(object):
 
         for path in [status_path, build_path, edits_path, extract_path]:
             if not path.exists():
-                raise ValueError('Scenario directory must contain the 4 files')
+                raise ValueError(
+                    'Scenario directory must contain the 4 files. See README.'
+                )
 
         return status_path, build_path, edits_path, extract_path

@@ -2,6 +2,69 @@
 
 In the context of computer vision, detection tasks with open class domains require more flexibility than flat class distinction in simple vision tasks (dog/cat classification). 
 
+## Solution proposal
+
+In the following paragraphs, we explain how to set up and use the solution we propose, along with the choices we made to solve the exercise.
+
+### Setup ⚙️
+
+#### Requirements
+
+We use [pipenv](https://github.com/pypa/pipenv) to manage dependencies with a virtual environment altogether. We first need to install it if not done already: https://pipenv.pypa.io/en/latest/#install-pipenv-today.
+
+Then, run the following command to setup the dependencies from the project root directory:
+
+```$ pipenv install```
+
+#### Resources
+
+In order to test the solution, we use different scenarios proposed by the problem statement. Three of them are available by default. In order to create new ones, add a new directory in the `data/scenarios/` folder with the new scenario ID as name, with the following content:
+
+* `expected_status.json` containing the expected status output
+* `graph_build.json` containing the structure of the initial graph
+* `graph_edits.json` containing the structure of the graph edits
+* `img_extract.json` containing the image extract
+
+One can use the provided scenarios to figure out the exact structure of each file.
+
+#### Run
+
+In order to run a given scenario, activate the virtual environment:
+
+```$ pipenv shell```
+
+and then run: 
+
+```$ python run.py --scenario_id <id>```
+
+For instance: `$ python run.py --scenario_id 3`
+
+Note that if `--scenario_id` is not provided, scenario 3 is used by default.
+
+### Design and discussion 👩‍🎨
+
+#### High level strategy
+
+The solution uses a strategy which delegates the "heavy lifting", i.e. the status computations, to the write phase. This provides an instant status response, while the edits writes could be done asynchronously using background jobs. The cost is to consume more memory in order to store the class status.
+
+This also provides the advantage of delegating the image status concept to the class itself by design, which is nice since the status actually depends on its classes and not the image itself. Then, the database could be explored at any time for any class in order to preview the current status.
+
+This could be discussed depending on the business or operational needs and requirements of course.
+
+#### Data structures and algorithm
+
+The database is composed of two main data structures:
+* A tree structure, by keeping a reference to a root `Node`, and having each node keeping track of its parent and children. This allows navigating the classes when needed.
+* A hash table mapping a class name to a node, in order to map the inputs, provided as strings, to the corresponding objects in the database.
+
+During an edit, the algorithm principle is the following:
+1. We add each node to the tree structure and hash table
+2. Each node also stores a `status` field, which is valid by default
+3. For each new node, we tell its parent to take the `granularity_staged` status, if priorities allow it
+4. For each new node, we tell its neighbours to take the `coverage_staged` status.
+
+Then, when querying the extract status, we only have to fetch the status of each class for each image, and aggregate the given statuses to output the final one.
+
 
 
 ## Context

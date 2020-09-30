@@ -22,4 +22,4 @@ def run(scenario_id):
 
 
 if __name__ == "__main__":
-    run(1)
+    run(3)
